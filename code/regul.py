@@ -11,8 +11,9 @@ import re
 from random import random,randint,choice
 from time import sleep
 from copy import deepcopy
+from agent import agent
 
-fout = open('info_log.txt','w')
+fout = open('info_log-%s.txt'%str(datetime.now())[:10],'w')
 
 
 
@@ -84,11 +85,18 @@ def testip(ip):
         print str(e)
         return False
     
+    
+def agent_ip():
+    agentout = open('agent_ip.txt','w')
+    ag = agent()
+    ag.get_ip(agentout)
+    agentout.close()
             
 def start():
-    fin = open('../agent/agent_ip.txt')
+    fin = open('agent_ip.txt')
     proxy_list = []
     for line in fin:
+        #print line
         proxy_list.append(line.strip())
     begin = datetime.now()
     nums=[]
@@ -99,11 +107,16 @@ def start():
             url = "http://product.dangdang.com/%d.html" %num
             urllib.urlopen(url)
             nums.append(num)
+            fout.write(str(num)+'\t')
             count+=1;
         except Exception,e:
             continue
     nums.append(23269384)
-    for i in range(10):
+    fout.write('\n')
+    for i in range(100):
+        if i%10==0:
+            agent_ip()
+    
         info = str(datetime.now()-begin)
         fout.write("Acctack: "+str(i+1)+'\t')
         fout.write('\t'+info+'\n')
@@ -116,3 +129,4 @@ def start():
         
 if __name__ =="__main__":
     start()
+    fout.close()
